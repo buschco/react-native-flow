@@ -1,21 +1,39 @@
 import React, {useRef} from 'react';
 import {
+  NativeModules,
+  AppRegistry,
   Animated,
   View,
   StyleSheet,
   PanResponder,
   ScrollView,
 } from 'react-native';
+import 'react-native-gesture-handler';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
 
-const App = () => {
+const Stack = createStackNavigator();
+
+function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Home" component={HomeScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+function HomeScreen() {
   const pan = useRef(new Animated.ValueXY()).current;
 
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
-      onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}], {
-        useNativeDriver: false,
-      }),
+
+      onPanResponderMove: (a, d) => {
+        pan.setValue({x: d.dx, y: d.dy});
+      },
       onPanResponderRelease: () => {
         pan.extractOffset();
       },
@@ -41,7 +59,7 @@ const App = () => {
       <View style={styles.height300} />
     </ScrollView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   height300: {height: 500, backgroundColor: 'red'},
@@ -62,3 +80,5 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+
+AppRegistry.registerComponent('Financeguru', () => App);
